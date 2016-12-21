@@ -1,0 +1,61 @@
+<?php
+
+
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Customers
+ *
+ * @ORM\Table(name="customers")
+ * @ORM\Entity
+ */
+class Customers
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer", nullable=true)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     */
+    private $name;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="card_balance", type="integer", nullable=true)
+     */
+    private $cardBalance;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="card_number", type="string", length=18, nullable=true)
+     */
+    private $cardNumber;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="card_limit", type="integer", nullable=true)
+     */
+    private $cardLimit;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="is_card_valid", type="integer", nullable=true)
+     */
+    private $isCardValid;
+
+
+}
+

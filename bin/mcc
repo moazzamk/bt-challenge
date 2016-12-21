@@ -1,0 +1,63 @@
+#!/usr/bin/php
+<?php
+
+// we will use sqlite
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+
+$fileContents = '';
+if ($argc == 2) { // A text file was specified
+    $fileContents = file_get_contents($argv[1]);
+}
+elseif ($argc == 1) {  // File contents were put in stdin
+    stream_set_blocking(STDIN, 0);
+    $fileContents = file_get_contents('php://stdin');
+}
+
+$container = new \League\Container\Container();
+$services = require_once __DIR__ . '/../config/services.php';
+foreach ($services as $name=>$definition) {
+    $container->share($name, $definition);
+}
+
+$entry = __DIR__;
+$db = new PDO("sqlite:$entry/../data/cc.db");
+$db->exec('
+    CREATE TABLE customers (
+        id int PRIMARY key,
+        name varchar(255),
+        card_balance int,
+        card_number varchar(18),
+        card_limit int,
+        is_card_valid int
+    )
+');
+
+var_dump($db->errorInfo());
+
+$lines = explode(PHP_EOL, $fileContents);
+foreach ($lines as $line) {
+    $data = explode(' ', $line);
+    switch (strtolower($data[0])) {
+        case 'add':
+            if ($container->get('CreditCardValidator')->validate($data[2])) {
+                $db->exec("INSERT INTO customers (name, balance, card_number) VALUES('{$data[1]}', 0, {$data[2]})");
+            } else {
+
+            }
+
+            break;
+
+        case 'charge':
+            $db->exec("UPDATE customers SET balance = balance + {$data[2]} WHERE name='{$data[1]}'");
+            break;
+
+        case 'credit':
+            $db->exec("UPDATE customers SET balance = balance - {$data[2]} WHERE name='{$data[1]}'");
+            break;
+    }
+}
+$q = $db->query('SELECT * FROM customers ');
+var_dump($db->errorInfo());
+var_dump($db->query('SELECT * FROM customers ')->fetchAll(PDO::FETCH_ASSOC));

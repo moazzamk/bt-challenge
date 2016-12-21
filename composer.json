@@ -1,0 +1,18 @@
+{
+    "config": {
+        "bin-dir": "bin"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Challenge\\": "src"
+        }
+    },
+    "require": {
+        "league/container": "^2.2",
+        "doctrine/orm": "^2.5",
+        "symfony/yaml": "^3.2"
+    }
+}
