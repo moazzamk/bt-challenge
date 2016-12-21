@@ -56,7 +56,5 @@ foreach ($lines as $line) {
 
 $action = $container->get('Customer\SummaryAction');
 foreach ($action() as $key=>$value) {
-    foreach ($value as $name=>$balance) {
-        fprintf(STDOUT, "$name:$balance\n");
-    }
+    fprintf(STDOUT, "$key: $value\n");
 }

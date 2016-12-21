@@ -21,7 +21,7 @@ class SummaryAction
         $customers = $this->customerRepository->findAll();
         foreach ($customers as $customer) {
             if ($customer->getIsCardValid()) {
-                $ret[$customer->getName()] = $customer->getCardBalance();
+                $ret[$customer->getName()] = '$' . $customer->getCardBalance();
             }
             else {
                 $ret[$customer->getName()] = 'error';
