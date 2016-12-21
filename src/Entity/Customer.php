@@ -8,16 +8,16 @@ use Doctrine\ORM\Mapping as ORM;
  * Customers
  *
  * @ORM\Table(name="customers")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="\Challenge\Repository\CustomerRepository")
  */
 class Customer
 {
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer", nullable=true)
+     * @ORM\Column(name="id", type="string", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -73,7 +73,7 @@ class Customer
      *
      * @param string $name
      *
-     * @return Customers
+     * @return Customer
      */
     public function setName($name)
     {
@@ -97,11 +97,11 @@ class Customer
      *
      * @param integer $cardBalance
      *
-     * @return Customers
+     * @return Customer
      */
     public function setCardBalance($cardBalance)
     {
-        $this->cardBalance = $cardBalance;
+        $this->cardBalance = (int)$cardBalance;
 
         return $this;
     }
@@ -121,7 +121,7 @@ class Customer
      *
      * @param string $cardNumber
      *
-     * @return Customers
+     * @return Customer
      */
     public function setCardNumber($cardNumber)
     {
@@ -145,11 +145,11 @@ class Customer
      *
      * @param integer $cardLimit
      *
-     * @return Customers
+     * @return Customer
      */
     public function setCardLimit($cardLimit)
     {
-        $this->cardLimit = $cardLimit;
+        $this->cardLimit = (int)$cardLimit;
 
         return $this;
     }
@@ -169,7 +169,7 @@ class Customer
      *
      * @param integer $isCardValid
      *
-     * @return Customers
+     * @return Customer
      */
     public function setIsCardValid($isCardValid)
     {
