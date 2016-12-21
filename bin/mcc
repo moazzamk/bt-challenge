@@ -1,10 +1,27 @@
-#!/usr/bin/php
+#!/usr/local/php5/bin/php
 <?php
 
 // we will use sqlite
+$entry = __DIR__;
+$db = new PDO("sqlite:$entry/../data/cc.db");
+
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../bootstrap.php';
 
+/** @var \Doctrine\ORM\EntityManager $entityManager */
+
+$entityManager->getConnection()->exec('DROP TABLE customers');
+$entityManager->getConnection()->exec('
+    CREATE TABLE customers (
+        id varchar(36) not null,
+        name varchar(255),
+        card_balance int,
+        card_number varchar(18),
+        card_limit int,
+        is_card_valid int
+    )
+');
 
 $fileContents = '';
 if ($argc == 2) { // A text file was specified
@@ -16,48 +33,30 @@ elseif ($argc == 1) {  // File contents were put in stdin
 }
 
 $container = new \League\Container\Container();
+$container->share('EntityManager', $entityManager);
 $services = require_once __DIR__ . '/../config/services.php';
 foreach ($services as $name=>$definition) {
-    $container->share($name, $definition);
+    $container->share($name, function () use ($container, $definition) {
+        return $definition($container);
+    });
 }
 
-$entry = __DIR__;
-$db = new PDO("sqlite:$entry/../data/cc.db");
-$db->exec('
-    CREATE TABLE customers (
-        id int PRIMARY key,
-        name varchar(255),
-        card_balance int,
-        card_number varchar(18),
-        card_limit int,
-        is_card_valid int
-    )
-');
-
-var_dump($db->errorInfo());
-
+$customerRepository = $entityManager->getRepository('\Challenge\Entity\Customer');
 $lines = explode(PHP_EOL, $fileContents);
 foreach ($lines as $line) {
     $data = explode(' ', $line);
-    switch (strtolower($data[0])) {
-        case 'add':
-            if ($container->get('CreditCardValidator')->validate($data[2])) {
-                $db->exec("INSERT INTO customers (name, balance, card_number) VALUES('{$data[1]}', 0, {$data[2]})");
-            } else {
+    $command = array_shift($data);
+    if (empty($command)) {
+        continue;
+    }
+    $action = "Customer\\{$command}Action";
 
-            }
+    call_user_func_array($container->get($action), $data);
+}
 
-            break;
-
-        case 'charge':
-            $db->exec("UPDATE customers SET balance = balance + {$data[2]} WHERE name='{$data[1]}'");
-            break;
-
-        case 'credit':
-            $db->exec("UPDATE customers SET balance = balance - {$data[2]} WHERE name='{$data[1]}'");
-            break;
+$action = $container->get('Customer\SummaryAction');
+foreach ($action() as $key=>$value) {
+    foreach ($value as $name=>$balance) {
+        fprintf(STDOUT, "$name:$balance\n");
     }
 }
-$q = $db->query('SELECT * FROM customers ');
-var_dump($db->errorInfo());
-var_dump($db->query('SELECT * FROM customers ')->fetchAll(PDO::FETCH_ASSOC));

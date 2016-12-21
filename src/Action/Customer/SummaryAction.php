@@ -20,9 +20,13 @@ class SummaryAction
         $ret = [];
         $customers = $this->customerRepository->findAll();
         foreach ($customers as $customer) {
-            $ret[] = [
-                $customer->getName() => $customer->getCardBalance()
-            ];
+            if ($customer->getIsCardValid()) {
+                $ret[$customer->getName()] = $customer->getCardBalance();
+            }
+            else {
+                $ret[$customer->getName()] = 'error';
+            }
+
         }
 
         return $ret;
