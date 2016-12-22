@@ -23,8 +23,9 @@ class SummaryActionSpec extends ObjectBehavior
         $customer->getName()->willReturn('name');
         $customer->getCardBalance()->willReturn(100);
         $customer->getIsCardValid()->willReturn(false);
-        $customerRepository->findAll()->willReturn([$customer]);
-        $this->__invoke()->shouldHaveKeyWithValue('name', 'error');
+        $customerRepository->findBy(['lastUpdateTs' => 123], ['name' => 'ASC'])->willReturn([$customer]);
+
+        $this->__invoke(123)->shouldHaveKeyWithValue('name', 'error');
     }
 
     public function it_returns_balance_for_valid_cards(CustomerRepository $customerRepository, Customer $customer)
@@ -32,7 +33,7 @@ class SummaryActionSpec extends ObjectBehavior
         $customer->getName()->willReturn('name');
         $customer->getCardBalance()->willReturn(100);
         $customer->getIsCardValid()->willReturn(true);
-        $customerRepository->findAll()->willReturn([$customer]);
-        $this->__invoke()->shouldHaveKeyWithValue('name', 100);
+        $customerRepository->findBy(['lastUpdateTs' => 123], ['name' => 'ASC'])->willReturn([$customer]);
+        $this->__invoke(123)->shouldHaveKeyWithValue('name', '$100');
     }
 }

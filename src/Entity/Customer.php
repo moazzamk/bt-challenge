@@ -57,6 +57,14 @@ class Customer
     private $isCardValid;
 
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="last_update_ts", type="integer", nullable=false)
+     */
+    private $lastUpdateTs = 0;
+
+
 
     /**
      * Get id
@@ -187,4 +195,26 @@ class Customer
     {
         return $this->isCardValid;
     }
+
+    /**
+     * @return integer
+     */
+    public function getLastUpdateTs()
+    {
+        return $this->lastUpdateTs;
+    }
+
+    /**
+     * @param int $lastUpdateTs
+     *
+     * @return Customer
+     */
+    public function setLastUpdateTs($lastUpdateTs)
+    {
+        $this->lastUpdateTs = $lastUpdateTs;
+
+        return $this;
+    }
+
+
 }

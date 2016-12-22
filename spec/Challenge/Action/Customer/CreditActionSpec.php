@@ -27,16 +27,19 @@ class CreditActionSpec extends ObjectBehavior
     {
         $customer->getCardBalance()->willReturn(0);
         $customer->getIsCardValid()->willReturn(false);
-        $rs = $this->__invoke('name', '$100')->getCardBalance()->shouldBe(0);
+        $rs = $this->__invoke('name', '$100', 123)->getCardBalance()->shouldBe(0);
     }
 
     public function it_subtracts_amount_from_the_card_balance(Customer $customer)
     {
+        $customer->setCardBalance(-99)->willReturn($customer);
         $customer->getIsCardValid()->willReturn(true);
         $customer->getCardBalance()->willReturn(1);
         $customer->getCardLimit()->willReturn(200);
+
+        $customer->setLastUpdateTs(123)->shouldBeCalled();
         $customer->setCardBalance(-99)->shouldBecalled();
 
-        $this->__invoke('name', '$100');
+        $this->__invoke('name', '$100', 123);
     }
 }

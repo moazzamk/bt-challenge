@@ -1,27 +1,9 @@
 #!/usr/local/php5/bin/php
 <?php
 
-// we will use sqlite
-$entry = __DIR__;
-$db = new PDO("sqlite:$entry/../data/cc.db");
-
-
-require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../bootstrap.php';
 
 /** @var \Doctrine\ORM\EntityManager $entityManager */
-
-$entityManager->getConnection()->exec('DROP TABLE customers');
-$entityManager->getConnection()->exec('
-    CREATE TABLE customers (
-        id varchar(36) not null,
-        name varchar(255),
-        card_balance int,
-        card_number varchar(18),
-        card_limit int,
-        is_card_valid int
-    )
-');
 
 $fileContents = '';
 if ($argc == 2) { // A text file was specified
@@ -32,29 +14,8 @@ elseif ($argc == 1) {  // File contents were put in stdin
     $fileContents = file_get_contents('php://stdin');
 }
 
-$container = new \League\Container\Container();
-$container->share('EntityManager', $entityManager);
-$services = require_once __DIR__ . '/../config/services.php';
-foreach ($services as $name=>$definition) {
-    $container->share($name, function () use ($container, $definition) {
-        return $definition($container);
-    });
-}
-
-$customerRepository = $entityManager->getRepository('\Challenge\Entity\Customer');
-$lines = explode(PHP_EOL, $fileContents);
-foreach ($lines as $line) {
-    $data = explode(' ', $line);
-    $command = array_shift($data);
-    if (empty($command)) {
-        continue;
-    }
-    $action = "Customer\\{$command}Action";
-
-    call_user_func_array($container->get($action), $data);
-}
-
-$action = $container->get('Customer\SummaryAction');
-foreach ($action() as $key=>$value) {
+$updateTs = time();
+$command = $container->get('Command\ProcessBatchCommand');
+foreach ($command($fileContents, $updateTs) as $key=>$value) {
     fprintf(STDOUT, "$key: $value\n");
 }

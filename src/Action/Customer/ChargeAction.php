@@ -21,7 +21,7 @@ class ChargeAction
         $this->entityManager = $entityManager;
     }
 
-    public function __invoke($name, $amount)
+    public function __invoke($name, $amount, $updateTs)
     {
         /** @var \Challenge\Entity\Customer $customer */
         $delta = (int)substr($amount, 1);
@@ -35,7 +35,8 @@ class ChargeAction
             return $customer;
         }
 
-        $customer->setCardBalance($customer->getCardBalance() + $delta);
+        $customer->setCardBalance($customer->getCardBalance() + $delta)
+                ->setLastUpdateTs($updateTs);
 
         $this->entityManager->flush();
 

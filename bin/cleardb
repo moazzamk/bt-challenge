@@ -1,0 +1,19 @@
+#!/usr/local/php5/bin/php
+<?php
+
+require_once __DIR__ . '/../bootstrap.php';
+
+/** @var \Doctrine\ORM\EntityManager $entityManager */
+
+$entityManager->getConnection()->exec('DROP TABLE IF EXISTS customers');
+$entityManager->getConnection()->exec('
+    CREATE TABLE customers (
+        id varchar(36) not null,
+        name varchar(255),
+        card_balance int,
+        card_number varchar(18),
+        card_limit int,
+        is_card_valid int,
+        last_update_ts int
+    )
+');

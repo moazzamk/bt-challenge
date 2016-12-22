@@ -2,10 +2,9 @@
 
 namespace spec\Challenge\Action\Customer;
 
-use Challenge\Entity\Customer;
 use Challenge\Repository\CustomerRepository;
-use Challenge\Validator\CreditCardValidator;
 use Doctrine\ORM\EntityManager;
+use Challenge\Entity\Customer;
 
 class ChargeActionSpec extends \PhpSpec\ObjectBehavior
 {
@@ -26,7 +25,7 @@ class ChargeActionSpec extends \PhpSpec\ObjectBehavior
     {
         $customer->getCardBalance()->willReturn(0);
         $customer->getIsCardValid()->willReturn(false);
-        $rs = $this->__invoke('name', '$100')->getCardBalance()->shouldBe(0);
+        $rs = $this->__invoke('name', '$100', 123)->getCardBalance()->shouldBe(0);
     }
 
     public function it_ignores_charges_over_the_card_limit(Customer $customer)
@@ -35,7 +34,7 @@ class ChargeActionSpec extends \PhpSpec\ObjectBehavior
         $customer->getCardBalance()->willReturn(99);
         $customer->getCardLimit()->willReturn(100);
 
-        $rs = $this->__invoke('name', '$100')->getCardBalance()->shouldBe(99);
+        $rs = $this->__invoke('name', '$100', 123)->getCardBalance()->shouldBe(99);
     }
 
     public function it_adds_charge_amount_to_the_card_balance(Customer $customer)
@@ -43,8 +42,11 @@ class ChargeActionSpec extends \PhpSpec\ObjectBehavior
         $customer->getIsCardValid()->willReturn(true);
         $customer->getCardBalance()->willReturn(1);
         $customer->getCardLimit()->willReturn(200);
-        $customer->setCardBalance(101)->shouldBecalled();
+        $customer->setCardBalance(101)->willReturn($customer);
 
-        $this->__invoke('name', '$100')->getCardBalance();
+        $customer->setCardBalance(101)->shouldBecalled();
+        $customer->setLastUpdateTs(123)->shouldBeCalled();
+
+        $this->__invoke('name', '$100', 123);
     }
 }
