@@ -54,7 +54,7 @@ bin/phpspec run -vvv --format=pretty spec
 
 Integration tests can be run with:
 ```
-
+bin/behat
 ```
 
 
@@ -76,3 +76,4 @@ and adds services to it
 made development much faster. The other language I wanted to do this in is Go. 
  However, I would have had to write much more code. Given the time constraints 
  it wasn't ideal.
+
