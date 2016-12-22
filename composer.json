@@ -3,7 +3,8 @@
         "bin-dir": "bin"
     },
     "require-dev": {
-        "phpspec/phpspec": "^3.2"
+        "phpspec/phpspec": "^3.2",
+        "behat/behat": "^3.2"
     },
     "autoload": {
         "psr-4": {

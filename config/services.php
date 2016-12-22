@@ -20,6 +20,12 @@ return [
     'Customer\SummaryAction' => function ($container) {
         return new \Challenge\Action\Customer\SummaryAction($container->get('EntityManager')->getRepository('\Challenge\Entity\Customer'));
     },
+    'Customer\UpdateAction' => function ($container) {
+        return new \Challenge\Action\Customer\UpdateAction(
+            $container->get('Validator\CreditCardValidator'),
+            $container->get('EntityManager')
+        );
+    },
 
     'Command\ProcessBatchCommand' => function ($container) {
         return new \Challenge\Command\ProcessBatchCommand($container);

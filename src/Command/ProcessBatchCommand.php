@@ -2,6 +2,7 @@
 
 namespace Challenge\Command;
 
+use Challenge\Exception\ConflictException;
 use Doctrine\ORM\EntityManager;
 use League\Container\Container;
 
@@ -39,9 +40,24 @@ class ProcessBatchCommand
             if (empty($command)) {
                 continue;
             }
-            $action = "Customer\\{$command}Action";
 
-            call_user_func_array($this->container->get($action), $data);
+            $action = "Customer\\{$command}Action";
+            switch ($command) {
+                case 'Add':
+                    try {
+                        call_user_func_array($this->container->get($action), $data);
+                    }
+                    catch (ConflictException $e) { // Customer exists already
+                        $action = 'Customer\UpdateAction';
+                        call_user_func_array($this->container->get($action), $data);
+                    }
+
+                    break;
+
+                default:
+                    call_user_func_array($this->container->get($action), $data);
+                    break;
+            }
         }
 
         $action = $this->container->get('Customer\SummaryAction');
