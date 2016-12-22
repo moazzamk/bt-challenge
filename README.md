@@ -3,6 +3,10 @@
 ##Requirements
 - Composer (https://getcomposer.org/doc/00-intro.md#globally)
 - PHP >= 7.0 (http://php.net)
+- SQLite extension for PHP
+- PDO extension for PHP
+- SQLite3
+
 
 ##Setup
 Run the following commands to setup the project: 
@@ -68,5 +72,7 @@ and adds services to it
 - The domain logic is separated into `src` folder.
 - SQLITE is used for persisting changes from the batch file. The data layer
  uses Repository pattern, Unit of Work, Data mapper patterns. 
- 
- 
+- I chose to do this project in PHP because it has most of the libraries so it 
+made development much faster. The other language I wanted to do this in is Go. 
+ However, I would have had to write much more code. Given the time constraints 
+ it wasn't ideal.
